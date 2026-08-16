@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>성균관대 맛집 찾기 · 자과캠 &amp; 인사캠</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Design tokens — Starbucks-inspired system (DESIGN.md)
+     warm cream canvas + four-tier green + universal 50px pill
+     ============================================================ */
+  :root{
+    --sb-green:#006241;        /* headings */
+    --green-accent:#00754A;    /* filled CTAs, Frap */
+    --house-green:#1E3932;     /* feature bands, footer */
+    --green-uplift:#2b5148;    /* decorative accents */
+    --green-light:#d4e9e2;     /* light tints */
+
+    --white:#ffffff;
+    --neutral-cool:#f9f9f9;
+    --neutral-warm:#f2f0eb;    /* primary page canvas */
+    --ceramic:#edebe9;         /* zone separator */
+    --input-border:#d6dbde;
+    --hairline:#e7e7e7;
+
+    --text-black:rgba(0,0,0,0.87);
+    --text-black-soft:rgba(0,0,0,0.58);
+    --text-white:#ffffff;
+    --text-white-soft:rgba(255,255,255,0.70);
+
+    --red:#c82014;
+
+    --font:"Inter","Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Helvetica Neue",Helvetica,Arial,sans-serif;
+    --tracking:-0.01em;
+
+    --space-1:4px;
+    --space-2:8px;
+    --space-3:16px;
+    --space-4:24px;
+    --space-5:32px;
+    --space-6:40px;
+    --space-7:48px;
+    --space-8:56px;
+    --space-9:64px;
+
+    --r-card:12px;
+    --r-input:4px;
+    --r-pill:50px;
+
+    --shadow-card:0 0 0.5px 0 rgba(0,0,0,0.14), 0 1px 1px 0 rgba(0,0,0,0.24);
+    --shadow-nav:0 1px 3px rgba(0,0,0,0.1), 0 2px 2px rgba(0,0,0,0.06), 0 0 2px rgba(0,0,0,0.07);
+    --shadow-frap:0 0 6px rgba(0,0,0,0.24), 0 8px 12px rgba(0,0,0,0.14);
+    --shadow-frap-active:0 0 6px rgba(0,0,0,0.24), 0 8px 12px rgba(0,0,0,0);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--neutral-warm);
+    color:var(--text-black);
+    font-family:var(--font);
+    font-size:16px;
+    font-weight:400;
+    line-height:1.5;
+    letter-spacing:var(--tracking);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 var(--space-3);
+  }
+
+  .visually-hidden{
+    position:absolute;
+    width:1px;height:1px;
+    padding:0;margin:-1px;
+    overflow:hidden;
+    clip:rect(0 0 0 0);
+    white-space:nowrap;border:0;
+  }
+
+  /* ---------- global nav ---------- */
+  .top-nav{
+    position:sticky;
+    top:0;
+    z-index:20;
+    height:64px;
+    background:var(--white);
+    box-shadow:var(--shadow-nav);
+    display:flex;
+    align-items:center;
+  }
+  .top-nav .wrap{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:var(--space-3);
+  }
+  .wordmark{
+    display:inline-flex;
+    align-items:center;
+    gap:var(--space-2);
+    color:var(--sb-green);
+    font-size:16px;
+    font-weight:600;
+    line-height:1.2;
+  }
+  .wordmark .mark{
+    width:32px;height:32px;
+    border-radius:50%;
+    background:var(--sb-green);
+    color:var(--white);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:15px;
+  }
+  .nav-right{
+    font-size:14px;
+    font-weight:600;
+    line-height:1.2;
+    color:var(--text-black-soft);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{padding:var(--space-7) 0 var(--space-6);}
+  .hero h1{
+    font-size:clamp(28px,5vw,45px);
+    font-weight:600;
+    line-height:1.2;
+    letter-spacing:-0.16px;
+    color:var(--sb-green);
+    margin:0 0 var(--space-3);
+  }
+  .hero p{
+    font-size:19px;
+    font-weight:400;
+    line-height:1.75;
+    color:var(--text-black);
+    margin:0;
+    max-width:60ch;
+  }
+  .hero .stat{
+    display:inline-block;
+    margin-top:var(--space-4);
+    background:var(--green-light);
+    color:var(--sb-green);
+    border-radius:var(--r-pill);
+    padding:6px 16px;
+    font-size:14px;
+    font-weight:600;
+    line-height:1.5;
+  }
+
+  section.band{padding-bottom:var(--space-9);}
+
+  /* ---------- content card ---------- */
+  .card-surface{
+    background:var(--white);
+    border-radius:var(--r-card);
+    box-shadow:var(--shadow-card);
+    padding:var(--space-4);
+  }
+
+  .filter-section{
+    margin:0 0 var(--space-5);
+    padding:0;
+    border:0;
+  }
+  .filter-section h2{
+    font-size:24px;
+    font-weight:400;
+    line-height:1.5;
+    letter-spacing:-0.16px;
+    color:var(--text-black);
+    margin:0 0 var(--space-1);
+  }
+  .filter-section h2 em{
+    font-style:normal;
+    font-weight:600;
+    color:var(--sb-green);
+  }
+  .filter-section .hint{
+    font-size:14px;
+    font-weight:400;
+    line-height:1.5;
+    color:var(--text-black-soft);
+    margin:0 0 var(--space-3);
+  }
+
+  /* ---------- pills ---------- */
+  .chip-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--space-2);
+  }
+  .btn,.chip{
+    font-family:var(--font);
+    letter-spacing:var(--tracking);
+    border-radius:var(--r-pill);
+    cursor:pointer;
+    transition:all 0.2s ease;
+  }
+  .btn:active,.chip:active{transform:scale(0.95);}
+
+  .chip{
+    appearance:none;
+    background:transparent;
+    border:1px solid var(--text-black);
+    color:var(--text-black);
+    font-size:14px;
+    font-weight:600;
+    line-height:1.2;
+    padding:11px 20px;
+  }
+  .chip.active{
+    background:var(--green-accent);
+    border-color:var(--green-accent);
+    color:var(--white);
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:var(--space-2);
+    border:1px solid transparent;
+    font-size:16px;
+    font-weight:600;
+    line-height:1.2;
+    padding:13px 24px;
+  }
+  .btn-primary{
+    background:var(--green-accent);
+    border-color:var(--green-accent);
+    color:var(--white);
+  }
+  .btn-outline{
+    background:transparent;
+    border-color:var(--green-accent);
+    color:var(--green-accent);
+  }
+  .btn-on-dark{
+    background:transparent;
+    border-color:var(--white);
+    color:var(--white);
+    font-size:14px;
+    padding:9px 18px;
+  }
+  .actions{
+    display:flex;
+    gap:var(--space-2);
+    margin-top:var(--space-4);
+  }
+  :focus-visible{outline:2px solid var(--green-accent); outline-offset:3px;}
+  .result-band :focus-visible{outline-color:var(--white);}
+
+  /* ---------- results ---------- */
+  #resultSection{display:none;}
+
+  .result-band{
+    background:var(--house-green);
+    color:var(--text-white);
+    padding:var(--space-5) 0;
+    margin-bottom:var(--space-5);
+  }
+  .result-band h2{
+    font-size:24px;
+    font-weight:600;
+    line-height:1.5;
+    letter-spacing:-0.16px;
+    margin:0 0 var(--space-1);
+  }
+  .result-band h2:focus{outline:none;}
+  .result-band .filters{
+    font-size:16px;
+    font-weight:400;
+    line-height:1.5;
+    color:var(--text-white-soft);
+    margin:0;
+  }
+  .result-band .excluded{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--text-white-soft);
+    margin:var(--space-2) 0 0;
+  }
+  .result-band .band-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--space-2);
+    margin-top:var(--space-4);
+  }
+
+  /* random pick — cream band with the accent ring, not a new surface tone */
+  .pick{display:none; margin-bottom:var(--space-5);}
+  .pick.visible{display:block;}
+  .pick-inner{
+    background:var(--white);
+    border-radius:var(--r-card);
+    box-shadow:var(--shadow-card);
+    border-top:4px solid var(--green-accent);
+    padding:var(--space-4);
+  }
+  .pick-label{
+    display:inline-block;
+    background:var(--green-light);
+    color:var(--sb-green);
+    border-radius:var(--r-pill);
+    font-size:13px;
+    font-weight:600;
+    line-height:1.5;
+    padding:2px 12px;
+    margin-bottom:var(--space-2);
+  }
+  .pick h3{
+    font-size:24px;
+    font-weight:600;
+    line-height:1.4;
+    letter-spacing:-0.16px;
+    color:var(--sb-green);
+    margin:0 0 var(--space-2);
+    word-break:keep-all;
+  }
+  .pick .pick-menu{
+    font-size:16px;
+    font-weight:600;
+    line-height:1.5;
+    margin:0 0 var(--space-1);
+  }
+  .pick .pick-line{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--text-black-soft);
+    margin:0 0 var(--space-1);
+  }
+  .pick .pick-actions{margin-top:var(--space-3);}
+
+  /* sort bar — follows the DESIGN.md outlined-select spec */
+  .sort-bar{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:var(--space-2);
+    margin-bottom:var(--space-3);
+  }
+  .sort-bar label{
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-black-soft);
+  }
+  .sort-bar select{
+    font-family:var(--font);
+    letter-spacing:var(--tracking);
+    font-size:14px;
+    font-weight:600;
+    color:var(--text-black);
+    background:var(--white);
+    border:1px solid var(--input-border);
+    border-radius:var(--r-input);
+    padding:10px 12px;
+    cursor:pointer;
+  }
+  .sort-bar select:focus{border-color:var(--green-accent);}
+
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:var(--space-3);
+  }
+  .card{
+    display:flex;
+    flex-direction:column;
+    gap:var(--space-2);
+  }
+  .card-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:var(--space-2);
+  }
+  .card h3{
+    font-size:22px;
+    font-weight:600;
+    line-height:1.4;
+    letter-spacing:-0.16px;
+    color:var(--sb-green);
+    margin:0;
+    word-break:keep-all;
+  }
+  .badge{
+    flex-shrink:0;
+    background:transparent;
+    border:1px solid var(--green-accent);
+    color:var(--green-accent);
+    border-radius:var(--r-pill);
+    font-size:13px;
+    font-weight:600;
+    line-height:1.5;
+    padding:2px 12px;
+    white-space:nowrap;
+  }
+  .tag-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:var(--space-1);
+  }
+  .mini-tag{
+    background:var(--ceramic);
+    color:var(--text-black);
+    border-radius:var(--r-pill);
+    font-size:13px;
+    font-weight:600;
+    line-height:1.5;
+    padding:2px 12px;
+  }
+  .mini-tag.inside{background:var(--green-light); color:var(--sb-green);}
+  .mini-tag.share{background:transparent; color:var(--text-black-soft); border:1px solid var(--input-border);}
+  .mini-tag.open-now{background:var(--green-accent); color:var(--white);}
+  .mini-tag.closed-now{background:transparent; color:var(--red); border:1px solid var(--red);}
+
+  .card .menu{
+    font-size:16px;
+    font-weight:600;
+    line-height:1.5;
+    color:var(--text-black);
+    margin:0;
+  }
+  .card .desc{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--text-black-soft);
+    margin:0;
+  }
+  .card .meta{
+    display:flex;
+    flex-direction:column;
+    gap:var(--space-1);
+    margin-top:auto;
+    padding-top:var(--space-3);
+    border-top:1px solid var(--hairline);
+    font-size:14px;
+    line-height:1.5;
+  }
+  .card .meta div{
+    display:flex;
+    justify-content:space-between;
+    gap:var(--space-3);
+  }
+  .card .meta .label{color:var(--text-black-soft); flex-shrink:0;}
+  .card .meta .value{color:var(--text-black); font-weight:600; text-align:right;}
+  .card .meta .value.unknown{color:var(--text-black-soft); font-weight:400;}
+  .campus-note{
+    font-size:13px;
+    line-height:1.5;
+    color:var(--text-black-soft);
+    background:var(--neutral-warm);
+    border-radius:var(--r-input);
+    padding:8px 12px;
+    margin:var(--space-1) 0 0;
+  }
+  .card .foot{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:var(--space-2);
+    font-size:13px;
+    line-height:1.5;
+    color:var(--text-black-soft);
+    margin:var(--space-1) 0 0;
+  }
+  .card .source{white-space:nowrap;}
+
+  .empty-state{
+    grid-column:1/-1;
+    text-align:center;
+    padding:var(--space-7) var(--space-4);
+  }
+  .empty-state h3{
+    font-size:24px;
+    font-weight:600;
+    line-height:1.5;
+    letter-spacing:-0.16px;
+    color:var(--sb-green);
+    margin:0 0 var(--space-2);
+  }
+  .empty-state p{
+    font-size:16px;
+    line-height:1.5;
+    color:var(--text-black-soft);
+    margin:0;
+  }
+
+  /* ---------- Frap floating CTA ---------- */
+  .frap{
+    display:none;
+    position:fixed;
+    right:var(--space-4);
+    bottom:var(--space-4);
+    z-index:30;
+    width:56px;height:56px;
+    border:none;
+    border-radius:50%;
+    background:var(--green-accent);
+    color:var(--white);
+    box-shadow:var(--shadow-frap);
+    cursor:pointer;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    transition:all 0.2s ease;
+  }
+  .frap.visible{display:flex;}
+  .frap:active{transform:scale(0.95); box-shadow:var(--shadow-frap-active);}
+
+  /* ---------- footer ---------- */
+  .footer{
+    background:var(--house-green);
+    color:var(--text-white-soft);
+    padding:var(--space-7) 0;
+  }
+  .footer-cols{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:var(--space-5);
+  }
+  .footer h2{
+    font-size:16px;
+    font-weight:600;
+    line-height:1.5;
+    color:var(--text-white);
+    margin:0 0 var(--space-2);
+  }
+  .footer p{
+    font-size:14px;
+    line-height:1.5;
+    color:var(--text-white-soft);
+    margin:0 0 var(--space-2);
+  }
+  .footer p:last-child{margin-bottom:0;}
+  .footer .legal{
+    margin-top:var(--space-6);
+    padding-top:var(--space-4);
+    border-top:1px solid var(--green-uplift);
+    font-size:13px;
+    color:var(--text-white-soft);
+  }
+
+  /* ---------- responsive ---------- */
+  @media (min-width:768px){
+    .wrap{padding:0 var(--space-4);}
+    .top-nav{height:83px;}
+  }
+  @media (min-width:1024px){
+    .wrap{padding:0 var(--space-6);}
+    .top-nav{height:99px;}
+    .card-surface{padding:var(--space-5);}
+  }
+  @media (max-width:767px){
+    .hero{padding:var(--space-6) 0 var(--space-5);}
+    .hero p{font-size:16px; line-height:1.5;}
+    .cards{grid-template-columns:1fr;}
+    .footer-cols{grid-template-columns:1fr; gap:var(--space-4);}
+    .actions{flex-direction:column;}
+    .btn{width:100%;}
+    .sort-bar{justify-content:space-between;}
+    section.band{padding-bottom:var(--space-7);}
+  }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="wrap">
+    <span class="wordmark">
+      <span class="mark" aria-hidden="true">🍚</span>
+      성균관대 맛집 찾기
+    </span>
+    <span class="nav-right">자과캠 · 인사캠</span>
+  </div>
+</nav>
+
+<main>
+
+  <header class="wrap hero">
+    <h1>성대생을 위한<br>오늘의 한 끼</h1>
+    <p>수원 자연과학캠퍼스와 서울 인문사회과학캠퍼스, 두 캠퍼스의 학생식당부터 주변 맛집까지 한 번에 찾아보세요.</p>
+    <span class="stat" id="totalStat"></span>
+  </header>
+
+  <!-- STEP 1: 필터 -->
+  <section class="wrap band" id="filterPanel">
+    <div class="card-surface">
+      <fieldset class="filter-section" role="group" aria-labelledby="f1">
+        <h2 id="f1">① 캠퍼스</h2>
+        <p class="hint">선택하지 않으면 두 캠퍼스가 모두 검색돼요.</p>
+        <div class="chip-row" id="campusChips">
+          <button type="button" class="chip" data-value="자연과학캠퍼스">자과캠 (수원 율전동)</button>
+          <button type="button" class="chip" data-value="인문사회과학캠퍼스">인사캠 (서울 명륜동)</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="filter-section" role="group" aria-labelledby="f2">
+        <h2 id="f2">② 교내 / 교외</h2>
+        <p class="hint">교내는 학생식당·교직원식당, 교외는 캠퍼스 주변 상권의 식당이에요.<br>교내 식당의 그날 메뉴와 운영 시간은 <b>에브리타임 앱의 학식 정보</b>가 가장 정확해요.</p>
+        <div class="chip-row" id="areaChips">
+          <button type="button" class="chip" data-value="교내">교내</button>
+          <button type="button" class="chip" data-value="교외">교외</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="filter-section" role="group" aria-labelledby="f3">
+        <h2 id="f3">③ <em>무엇을 먹을까</em></h2>
+        <p class="hint">가장 빠르게 좁혀지는 조건이에요. 여러 개 선택할 수 있어요.</p>
+        <div class="chip-row" id="dishChips">
+          <button type="button" class="chip" data-value="백반·정식">백반·정식</button>
+          <button type="button" class="chip" data-value="덮밥">덮밥</button>
+          <button type="button" class="chip" data-value="돈까스">돈까스</button>
+          <button type="button" class="chip" data-value="면·국수">면·국수</button>
+          <button type="button" class="chip" data-value="중화요리">중화요리</button>
+          <button type="button" class="chip" data-value="파스타·피자">파스타·피자</button>
+          <button type="button" class="chip" data-value="버거">버거</button>
+          <button type="button" class="chip" data-value="족발·보쌈·전">족발·보쌈·전</button>
+          <button type="button" class="chip" data-value="곱창·구이">곱창·구이</button>
+          <button type="button" class="chip" data-value="찜닭">찜닭</button>
+          <button type="button" class="chip" data-value="빵·커피">빵·커피</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="filter-section" role="group" aria-labelledby="f4">
+        <h2 id="f4">④ 혼자 / 여럿</h2>
+        <p class="hint">"나눠먹기"는 족발 한상, 전, 곱창처럼 여럿이 나눠 먹는 구성이 대표 메뉴인 곳이에요.</p>
+        <div class="chip-row" id="servingChips">
+          <button type="button" class="chip" data-value="1인">1인 메뉴</button>
+          <button type="button" class="chip" data-value="나눠먹기">나눠먹기</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="filter-section" role="group" aria-labelledby="f5">
+        <h2 id="f5">⑤ 가격대</h2>
+        <p class="hint">모두 <b>1인당 예상 지출</b> 기준이에요. 나눠 먹는 메뉴는 1인당으로 환산했어요. 가격이 확인되지 않은 곳은 이 필터를 쓰면 제외됩니다.</p>
+        <div class="chip-row" id="priceChips">
+          <button type="button" class="chip" data-value="A">1만원 이하</button>
+          <button type="button" class="chip" data-value="B">1~2만원</button>
+          <button type="button" class="chip" data-value="C">2만원 이상</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="filter-section" role="group" aria-labelledby="f6">
+        <h2 id="f6">⑥ 지금 영업 중</h2>
+        <p class="hint" id="nowHint">기기 시각 기준으로 지금 문을 연 곳만 봅니다. 영업시간이 확인되지 않은 곳은 제외됩니다.</p>
+        <div class="chip-row" id="openChips">
+          <button type="button" class="chip" data-value="now">지금 문 연 곳만</button>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" id="searchBtn">이 조건으로 식당 찾기</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: 결과 -->
+  <section id="resultSection">
+    <div class="result-band">
+      <div class="wrap">
+        <div aria-live="polite">
+          <h2 id="resultHeading" tabindex="-1"><span id="resultCount">0</span>개의 식당을 찾았어요</h2>
+          <p class="filters" id="activeFiltersText"></p>
+          <p class="excluded" id="excludedText"></p>
+        </div>
+        <div class="band-actions">
+          <button type="button" class="btn btn-on-dark" id="pickBtn">🎲 랜덤으로 한 곳 골라줘</button>
+          <button type="button" class="btn btn-on-dark" id="copyBtn">이 결과 링크 복사</button>
+          <button type="button" class="btn btn-on-dark" id="backBtn">← 필터 다시 선택하기</button>
+        </div>
+      </div>
+    </div>
+    <div class="wrap band">
+      <div class="pick" id="pickPanel" aria-live="polite"></div>
+      <div class="sort-bar">
+        <label for="sortSelect">정렬</label>
+        <select id="sortSelect">
+          <option value="default">기본 (캠퍼스·교내순)</option>
+          <option value="priceAsc">가격 낮은순</option>
+          <option value="priceDesc">가격 높은순</option>
+          <option value="name">이름순</option>
+        </select>
+      </div>
+      <div class="cards" id="cards"></div>
+    </div>
+  </section>
+
+</main>
+
+<button type="button" class="frap" id="frapBtn" aria-label="필터 다시 선택하기">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <path d="M3 5h18M6 12h12M10 19h4"></path>
+  </svg>
+</button>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div>
+        <h2>정보 출처</h2>
+        <p>카드마다 출처를 표시했습니다. <b>학교 공식</b>은 성균관대 홈페이지 식당 안내, <b>다이닝코드</b>는 매장 페이지에 공개된 메뉴판, <b>구글 지도</b>는 지도에서 위치를 확인한 곳, <b>매장 SNS</b>는 매장이 직접 올린 계정, <b>리뷰 요약</b>은 공개 리뷰 글, <b>미검증</b>은 초기 목록에서 그대로 옮겨와 아직 대조하지 못한 항목입니다.</p>
+        <p>교내 식당은 학기마다 코너와 운영 시간이 바뀝니다. 그날의 학식 메뉴는 <b>에브리타임 앱의 학식 정보</b>를 확인해 주세요.</p>
+      </div>
+      <div>
+        <h2>가격 · 영업시간</h2>
+        <p>가격대는 모두 <b>1인당 예상 지출</b> 기준이며, 나눠 먹는 메뉴는 인원으로 나눠 환산했습니다.</p>
+        <p>영업시간은 수집 시점 기준입니다. "지금 영업 중" 표시는 참고용이니 방문 전 확인해 주세요.</p>
+      </div>
+      <div>
+        <h2>위치 안내</h2>
+        <p>교외 식당은 두 캠퍼스 주변 상권 기준으로 모았습니다. 정확한 위치와 가는 길은 <b>지도 앱에서 상호로 검색</b>해 확인해 주세요.</p>
+      </div>
+    </div>
+    <p class="legal">© 2026 성균관대 맛집 찾기 · 2026년 8월 기준 참고용 자료</p>
+  </div>
+</footer>
+
+<script>
+/* 분류 축
+   dish     : 무엇을 먹는가 (주 필터)
+   cuisine  : 국적 분류 (카드 표시용)
+   serving  : 1인 / 나눠먹기
+   priceBand: 1인당 예상 지출 A(1만 이하) B(1~2만) C(2만 이상) null(미확인)
+   hours    : {open,close,closed:[요일0=일],brk:[시작,끝]} · null이면 미확인
+   source   : 학교 공식 | 다이닝코드 | 리뷰 요약 | 미검증 */
+const restaurants = [
+  /* ===================== 자연과학캠퍼스 · 교내 ===================== */
+  { name:"봄이온소반", campus:"자연과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 3,500~5,500원", hours:null, source:"학교 공식",
+    menu:"비빔밥, 백반류", location:"학생회관 1~2층 행단골식당",
+    desc:"행단골식당의 한식 코너로, 캠퍼스 안에서 빠르고 저렴하게 먹을 수 있어요.", tags:["학생식당","가성비"] },
+  { name:"고슬비빈", campus:"자연과학캠퍼스", area:"교내", dish:"덮밥", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 3,500~5,500원", hours:null, source:"학교 공식",
+    menu:"덮밥, 비빔밥류", location:"학생회관 1~2층 행단골식당",
+    desc:"간단한 덮밥으로 끼니를 해결하기 좋은 행단골식당 코너예요.", tags:["학생식당","덮밥"] },
+  { name:"싱푸차이나", campus:"자연과학캠퍼스", area:"교내", dish:"중화요리", cuisine:"중식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 3,500~5,500원", hours:null, source:"학교 공식",
+    menu:"퓨전 중식 메뉴", location:"학생회관 1~2층 행단골식당",
+    desc:"수업 사이 짧은 시간에 부담없이 먹을 수 있는 교내 중식 코너예요.", tags:["학생식당","가성비"] },
+  { name:"가츠엔", campus:"자연과학캠퍼스", area:"교내", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 3,500~5,500원", hours:null, source:"학교 공식",
+    menu:"돈까스류", location:"학생회관 1~2층 행단골식당",
+    desc:"교내에서 간편하게 돈까스를 먹을 수 있는 코너예요.", tags:["학생식당","돈까스"] },
+  { name:"나폴리폴리", campus:"자연과학캠퍼스", area:"교내", dish:"파스타·피자", cuisine:"양식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 3,500~5,500원", hours:null, source:"학교 공식",
+    menu:"퓨전 이탈리안 메뉴", location:"학생회관 1~2층 행단골식당",
+    desc:"캠퍼스 안에서 간단히 즐기는 퓨전 양식 코너예요.", tags:["학생식당","가성비"] },
+  { name:"해오름식당", campus:"자연과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 3,300~5,500원", hours:null, source:"학교 공식",
+    menu:"한식 백반, 덮밥류", location:"제2공학관(26동) 지하 1층",
+    desc:"공대 건물 지하에 있어 실험·과제로 늦어질 때 찾기 좋은 학생식당이에요.", tags:["학생식당","공대","가성비"] },
+  { name:"구시재식당", campus:"자연과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"정식 약 7,000원 · 점심 뷔페 약 6,000원", hours:null, source:"학교 공식",
+    menu:"한식 정식, 점심 뷔페", location:"복지회관 3층",
+    desc:"반찬 구성이 넉넉한 교직원식당으로 학생도 이용할 수 있어요.", tags:["교직원식당","정식"] },
+  { name:"봉룡학사 기숙사식당", campus:"자연과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"1식 약 4,500원", hours:null, source:"학교 공식",
+    menu:"일반식 정식", location:"기숙사 봉룡학사",
+    desc:"기숙사생이 아니어도 이용할 수 있는 식당이에요. 사생은 할인 적용돼요.", tags:["기숙사","가성비"] },
+  { name:"THE S LOUNGE", campus:"자연과학캠퍼스", area:"교내", dish:"빵·커피", cuisine:"카페", serving:"1인",
+    priceBand:null, priceLabel:"가격 정보 미확인", hours:null, source:"학교 공식",
+    menu:"라운지 메뉴", location:"CNS센터 7층",
+    desc:"CNS센터 최상층에 있는 교내 라운지 공간이에요.", tags:["교내","라운지"] },
+
+  /* ===================== 자연과학캠퍼스 · 교외 ===================== */
+  { name:"짱식당", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"보쌈 1인 정식 8,000원 · 제육정식 8,000원 · 짱세트 11,000원",
+    hours:{open:"11:00",close:"20:00",closed:[6],brk:null}, source:"다이닝코드",
+    menu:"보쌈 1인 정식, 제육정식, 마늘보쌈", location:"율전동 (서부로2126번길 42)",
+    desc:"1인 정식이 8,000원이라 혼자 가도 부담 없어요. 계좌이체로 결제하면 500원 깎아줘요.", tags:["대학가","보쌈","가성비"] },
+  { name:"봉수육", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"1인",
+    priceBand:"B", priceLabel:"수육 1인 14,000원 · 수육나베 21,000원",
+    hours:{open:"16:00",close:"23:00",closed:[0],brk:null}, source:"다이닝코드",
+    menu:"수육, 수육나베, 고추말이", location:"율전동 (율전로108번길 11)",
+    desc:"1인 수육이 있어 혼자도 가능해요. 2인분을 시키면 한 그릇은 나베로 나와요.", tags:["수육","저녁"] },
+  { name:"일미리금계찜닭 수원성균관대점", campus:"자연과학캠퍼스", area:"교외", dish:"찜닭", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"금계찜닭 小 26,000원 (2인 · 1인당 약 13,000원)",
+    hours:{open:"11:00",close:"22:00",closed:[],brk:null}, source:"다이닝코드",
+    coords:[37.2978499,126.9730449],
+    menu:"금계찜닭, 로제찜닭, 콰트로치즈찜닭, 계란밥", location:"율전동 (서부로2126번길 26)",
+    desc:"찜닭 종류가 아홉 가지고 계란밥은 2,000원이에요. 연중무휴로 밤 10시까지 해요.", tags:["찜닭","모임"] },
+  { name:"생각나는 식당", campus:"자연과학캠퍼스", area:"교외", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"B", priceLabel:"직화 불백 정식 10,000원 · 육회비빔밥 11,000원",
+    hours:{open:"09:00",close:"22:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"직화 불백 정식, 육회비빔밥, 훈제오리 백반", location:"율전동 (서부로2126번길)",
+    desc:"아침 9시부터 밤 10시까지 열어 시간대 상관없이 든든하게 먹기 좋아요.", tags:["불백","비빔밥","브레이크타임없음"] },
+  { name:"우만동족발집 율전점", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"나눠먹기",
+    priceBand:null, priceLabel:"가격 정보 미확인",
+    hours:{open:"11:30",close:"22:00",closed:[],brk:null}, source:"매장 SNS",
+    menu:"족발, 보쌈정식", location:"율전동 (성균관대역 인근)",
+    desc:"보쌈정식은 점심(11:30~15:00), 족발은 13시부터 팔아요. 족발이 품절되면 일찍 닫으니 저녁 늦게 갈 땐 확인이 필요해요.", tags:["족발","보쌈정식","모임"] },
+  { name:"완미족발 수원성대점", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"한상 족발 40,000원 (2~3인 · 1인당 약 13,000~20,000원)",
+    hours:{open:"13:00",close:"24:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"족발, 보쌈, 족보한상", location:"율전동 (서부로 2107)",
+    desc:"곁들임 반찬이 18가지 나와요. 매일 13시부터 자정까지 영업해요.", tags:["족발","보쌈","모임"] },
+  { name:"동네빈대떡 성대직영점", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"A", priceLabel:"녹두빈대떡 19,000원 (2인 나눠 · 1인당 약 9,500원)",
+    hours:{open:"11:00",close:"23:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"녹두빈대떡, 모듬전, 해물파전, 순두부찌개", location:"율전동 (율전로 90-4)",
+    desc:"비 오는 날 전 생각날 때 찾는 곳이에요. 매일 11시부터 23시까지 영업해요.", tags:["전","막걸리","비오는날"] },
+  { name:"황금족발 수원성대점", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"족발 앞발 2인 36,000원 (1인당 약 18,000원) · 보쌈 소 31,000원",
+    hours:{open:"13:10",close:"21:00",closed:[1],brk:null}, source:"다이닝코드",
+    menu:"족발, 불족발, 보쌈, 쟁반국수", location:"율전동 (율전로107번길 5)",
+    desc:"월요일은 휴무예요. 요일마다 여는 시간이 달라서(금 12:30, 토·일 12:00) 낮에 갈 땐 확인이 필요해요.", tags:["족발","보쌈","월요일휴무"] },
+  { name:"대동집", campus:"자연과학캠퍼스", area:"교외", dish:"족발·보쌈·전", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"대동 보쌈 中 29,000원 (2~3인 · 1인당 약 10,000~14,500원)",
+    hours:{open:"16:00",close:"26:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"대동 보쌈, 녹두 해물파전, 감자전, 멸치국수", location:"율전동 (율전로108번길 15)",
+    desc:"새벽 2시까지(토요일은 3시) 하는 술집 겸 보쌈집이에요. 멸치국수 7,000원으로 마무리하기 좋아요.", tags:["보쌈","전","심야"] },
+  { name:"노랑냄비와석쇠구이집", campus:"자연과학캠퍼스", area:"교외", dish:"곱창·구이", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"A", priceLabel:"닭발 13,900원 · 옛날통닭 12,900원 (2인 나눠 · 1인당 약 7,000원)",
+    hours:{open:"17:00",close:"27:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"닭발, 옛날통닭, 쭈꾸미, 해물라면", location:"율전동 (서부로2123번길 16)",
+    desc:"저녁 5시부터 새벽 3시까지 연중무휴예요. 해물라면이 4,900원이에요.", tags:["닭발","통닭","심야"] },
+  { name:"보배반점 성균관대점", campus:"자연과학캠퍼스", area:"교외", dish:"중화요리", cuisine:"중식", serving:"1인",
+    priceBand:"A", priceLabel:"짬뽕 10,000원 · 짜장면 8,000원 (탕수육 小 19,000원)",
+    hours:{open:"11:00",close:"21:30",closed:[],brk:["15:00","16:00"]}, source:"다이닝코드",
+    menu:"짬뽕, 짜장면, 탕수육, 크림짬뽕", location:"율전동 (서부로 2132, 2층)",
+    desc:"매장이 넓고 주차가 되며 밥은 셀프예요. 로봇 서빙과 무료 커피바가 있어요.", tags:["짬뽕","단체가능","주차"] },
+  { name:"카츠요이", campus:"자연과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"B", priceLabel:"로스카츠 12,000원 · 히레카츠 13,000원 · 특로스카츠 16,000원",
+    hours:{open:"11:15",close:"19:30",closed:[0],brk:["15:00","17:30"]}, source:"다이닝코드",
+    menu:"히레(안심)카츠, 로스(등심)카츠, 특로스카츠", location:"천천동 (정자천로13번길 36)",
+    desc:"밥·된장국이 함께 나오고 반찬은 리필돼요. 일요일은 휴무이고 브레이크타임이 있어요.", tags:["돈카츠","일요일휴무"] },
+  { name:"면식당 수원성균관대점", campus:"자연과학캠퍼스", area:"교외", dish:"면·국수", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"돈코츠라멘 8,400원 · 쇼유라멘 7,900원 · 마제소바 9,400원",
+    hours:{open:"10:00",close:"20:40",closed:[],brk:null}, source:"다이닝코드",
+    menu:"돈코츠라멘, 쇼유라멘, 마제소바, 가라아게", location:"율전동 (서부로2106번길 18, 2층)",
+    desc:"라멘이 1만원 아래라 부담이 적어요. 아침 10시부터 연중무휴로 열어요.", tags:["라멘","마제소바","가성비"] },
+  { name:"윤실장 초밥", campus:"자연과학캠퍼스", area:"교외", dish:"면·국수", cuisine:"일식", serving:"1인",
+    priceBand:"C", priceLabel:"특모듬초밥 12P 21,000원 · 특선초밥 12P 23,000원",
+    hours:{open:"11:00",close:"21:30",closed:[0],brk:["14:15","17:00"]}, source:"다이닝코드",
+    menu:"특모듬초밥, 특선초밥, 우동·냉모밀 6,000원", location:"율전동 (서부로2105번길)",
+    desc:"초밥이 대표 메뉴이고 우동·모밀은 6,000원대예요. 브레이크타임이 있고 일요일은 쉬어요.", tags:["초밥","스시","일요일휴무"] },
+  { name:"최고당돈가스 율전점", campus:"자연과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"수제생등심돈가스 7,900원 · 치즈돈가스 9,900원",
+    hours:{open:"10:00",close:"22:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"수제생등심돈가스, 치즈돈가스, 냉모밀", location:"성균관대역 2번출구 도보 8분",
+    desc:"밥·반찬·샐러드를 셀프바에서 리필할 수 있어요.", tags:["돈가스","셀프바","가성비"] },
+  { name:"핵밥 수원성균관대점", campus:"자연과학캠퍼스", area:"교외", dish:"덮밥", cuisine:"일식", serving:"1인",
+    priceBand:"B", priceLabel:"고기듬뿍덮밥 10,900원 · 마제소바 11,900원",
+    hours:{open:"11:00",close:"21:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"고기듬뿍덮밥, 큐브스테이크덮밥, 마제소바, 돈코츠라멘", location:"율전동 (서부로 2128, 3층)",
+    desc:"매장이 넓어 단체로 가기 좋고 혼밥도 편해요. 라스트오더는 20:30이에요.", tags:["덮밥","라멘","단체가능"] },
+  { name:"옛이야기", campus:"자연과학캠퍼스", area:"교외", dish:"덮밥", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"스팸마요덮밥 6,700원 · 함박덮밥 8,200원",
+    hours:{open:"10:00",close:"21:00",closed:[5],brk:null}, source:"다이닝코드",
+    menu:"스팸마요덮밥, 매운삼겹덮밥, 함박덮밥, 매운우동", location:"율전동 (서부로2106번길)",
+    desc:"1만원 이하 덮밥이 대부분이고 셀프 반찬바가 있어요.", tags:["덮밥","가성비","금요일휴무"] },
+  { name:"카마타케제면소", campus:"자연과학캠퍼스", area:"교외", dish:"면·국수", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"치쿠텐 붓카케우동 8,000원 · 나베야끼우동 11,000원",
+    hours:{open:"11:00",close:"20:00",closed:[],brk:["15:00","17:00"]}, source:"다이닝코드",
+    menu:"붓카케우동, 냉우동, 니꾸우동, 나베야끼우동", location:"성균관대역 건물 4층",
+    desc:"역 안 4층에 있어 비 오는 날 접근이 편해요.", tags:["우동","역세권"] },
+  { name:"아늑", campus:"자연과학캠퍼스", area:"교외", dish:"파스타·피자", cuisine:"양식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 6,900~8,900원", hours:null, source:"구글 지도",
+    coords:[37.2975981,126.9720703],
+    menu:"알리오올리오, 로제크림 쉬림프 파스타, 고르곤졸라 피자", location:"율전동",
+    desc:"1만원 이하 메뉴가 많은 가성비 파스타·피자집으로, 성대생들 사이에서 입소문났어요.", tags:["파스타","가성비"] },
+  { name:"보리네주먹고기", campus:"자연과학캠퍼스", area:"교외", dish:"곱창·구이", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"주먹고기 200g 16,000원 · 삼겹살 200g 16,000원 (1인분 기준)",
+    hours:{open:"17:00",close:"22:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"주먹고기, 등심덧살, 삼겹살, 된장술밥", location:"율전동 (율전로98번길 6-9)",
+    desc:"직원이 고기를 구워주는 블루리본 고깃집이에요. 격주로 월요일에 쉬니 확인이 필요해요.", tags:["고기","회식","블루리본"] },
+  { name:"플렁드", campus:"자연과학캠퍼스", area:"교외", dish:"빵·커피", cuisine:"카페", serving:"1인",
+    priceBand:"A", priceLabel:"뚱에그타르트 4,600원 · 소금빵 3,800원 · 아메리카노 3,500원",
+    hours:{open:"11:00",close:"23:00",closed:[1],brk:null}, source:"다이닝코드",
+    menu:"에그타르트, 소금빵, 휘낭시에, 커피", location:"율전동 (서부로 2123)",
+    desc:"테이크아웃 전문이라 앉을 자리는 없어요. 밤 11시까지 열고 월요일은 휴무예요.", tags:["베이커리","테이크아웃","월요일휴무"] },
+
+  { name:"백채김치찌개 성균관대점", campus:"자연과학캠퍼스", area:"교외", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"돼지김치찌개 1인 10,000원 · 라면사리 1,000원",
+    hours:{open:"11:00",close:"23:00",closed:[],brk:["15:00","16:00"]}, source:"다이닝코드",
+    menu:"돼지김치찌개, 통돼지두루치기, 계란말이", location:"율전동 (서부로2105번길 21)",
+    desc:"1인 김치찌개가 있어 혼밥이 편해요. 라면사리가 1,000원이에요.", tags:["김치찌개","혼밥"] },
+  { name:"만다", campus:"자연과학캠퍼스", area:"교외", dish:"덮밥", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"가지덮밥·규동 9,500원 · 제육덮밥 8,500원",
+    hours:{open:"11:00",close:"23:00",closed:[0],brk:["15:00","17:00"]}, source:"다이닝코드",
+    menu:"돼지가지덮밥, 규동, 제육덮밥, 순두부", location:"율전동 (서부로2105번길 16-6)",
+    desc:"덮밥이 모두 1만원 아래예요. 토요일은 오후 3시까지만 하고 일요일은 휴무예요.", tags:["덮밥","가성비","일요일휴무"] },
+  { name:"행컵 성균관대점", campus:"자연과학캠퍼스", area:"교외", dish:"덮밥", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"치킨마요덮밥 5,900원 · 우삼겹숙주덮밥 8,900원",
+    hours:{open:"10:00",close:"20:40",closed:[],brk:null}, source:"다이닝코드",
+    menu:"컵밥, 덮밥, 라볶이, 어묵우동", location:"율전동 (서부로2126번길 30)",
+    desc:"혼밥 좌석이 있고 매장에서 먹으면 1,000원 깎아줘요. 6,000원 아래 메뉴가 많아요.", tags:["컵밥","혼밥","가성비"] },
+  { name:"키와마루아지", campus:"자연과학캠퍼스", area:"교외", dish:"면·국수", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"미라멘 8,500원 · 특미라멘 10,000원 · 부타동 9,000원",
+    hours:{open:"11:00",close:"21:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"돈코츠라멘, 츠케멘, 차슈동, 규동", location:"율전동 (서부로2105번길 26-3)",
+    desc:"라멘과 덮밥을 함께 파는 일본가정식 집이에요. 재료가 떨어지면 일찍 닫을 수 있어요.", tags:["라멘","덮밥"] },
+  { name:"국수파동", campus:"자연과학캠퍼스", area:"교외", dish:"면·국수", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"멸치국수 6,500원 · 비빔국수 7,500원 · 감자수제비 7,500원",
+    hours:{open:"11:00",close:"23:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"멸치국수, 비빔국수, 수제비, 해물파전", location:"율전동 (화산로233번길 64)",
+    desc:"국수와 수제비가 6,000원대예요. 매달 넷째 주 일요일은 휴무예요.", tags:["국수","수제비","가성비"] },
+  { name:"블랙스미스", campus:"자연과학캠퍼스", area:"교외", dish:"파스타·피자", cuisine:"양식", serving:"1인",
+    priceBand:"B", priceLabel:"매운크림해산물 파스타 17,900원",
+    hours:{open:"11:30",close:"23:00",closed:[],brk:["15:00","17:00"]}, source:"다이닝코드",
+    menu:"파스타, 피자", location:"율전동 (화산로233번길 47, 2층)",
+    desc:"분위기가 좋아 약속 자리로 많이 가요. 일요일은 저녁 8시까지만 해요.", tags:["파스타","분위기"] },
+  { name:"정든닭발 성대점", campus:"자연과학캠퍼스", area:"교외", dish:"곱창·구이", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"A", priceLabel:"직화닭발 中 19,000원 (2인 나눠 · 1인당 약 9,500원)",
+    hours:{open:"17:00",close:"25:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"직화닭발, 무뼈닭발, 국물닭발, 닭알찜", location:"율전동 (화산로233번길 61, 2층)",
+    desc:"성균관대역에서 도보 5분이고 새벽 1시까지 연중무휴예요. 포장하면 3,000원 할인돼요.", tags:["닭발","심야","포장할인"] },
+
+  /* ===================== 인문사회과학캠퍼스 · 교내 ===================== */
+  { name:"뚝심", campus:"인문사회과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 5,000~6,000원", hours:null, source:"학교 공식",
+    menu:"한식 백반", location:"600주년기념관 지하 1층 은행골식당",
+    desc:"은행골식당의 한식 코너예요. 혜화 일대 가성비 학식으로 자주 꼽혀요.", tags:["학생식당","가성비"] },
+  { name:"밥위애", campus:"인문사회과학캠퍼스", area:"교내", dish:"덮밥", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 5,000~6,000원", hours:null, source:"학교 공식",
+    menu:"덮밥류", location:"600주년기념관 지하 1층 은행골식당",
+    desc:"덮밥 위주로 빠르게 먹기 좋은 은행골식당 코너예요.", tags:["학생식당","덮밥"] },
+  { name:"코코도쿄", campus:"인문사회과학캠퍼스", area:"교내", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"1인 약 5,000~6,000원", hours:null, source:"학교 공식",
+    menu:"돈까스, 일식 메뉴", location:"600주년기념관 지하 1층 은행골식당",
+    desc:"은행골식당의 일식·돈까스 코너예요.", tags:["학생식당","돈까스"] },
+  { name:"금잔디식당", campus:"인문사회과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"석식 약 9,000원", hours:null, source:"학교 공식",
+    menu:"한식, 볶음우동", location:"경영관 지하 2층",
+    desc:"인사캠 대표 학생식당. 볶음우동은 화·목 고정 메뉴로 유명해요.", tags:["학생식당","볶음우동"] },
+  { name:"법고을식당", campus:"인문사회과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:null, priceLabel:"가격 정보 미확인", hours:null, source:"학교 공식",
+    menu:"한식 식사류", location:"법학관 지하 2층",
+    desc:"법학관 지하에 있는 교내 식당이에요.", tags:["학생식당"] },
+  { name:"패컬티식당", campus:"인문사회과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:null, priceLabel:"가격 정보 미확인", hours:null, source:"학교 공식",
+    menu:"식사류", location:"600주년기념관 6층",
+    desc:"600주년기념관 최상층에 있는 교내 식당이에요.", tags:["교내"] },
+  { name:"옥류천식당", campus:"인문사회과학캠퍼스", area:"교내", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"B", priceLabel:"1인 약 8,000~12,000원", hours:null, source:"학교 공식",
+    menu:"한정식류", location:"교수회관",
+    desc:"학식보다 격식 있는 자리가 필요할 때 찾는 교내 식당이에요.", tags:["교직원식당","정식"] },
+
+  /* ===================== 인문사회과학캠퍼스 · 교외 ===================== */
+  { name:"대가곱창", campus:"인문사회과학캠퍼스", area:"교외", dish:"곱창·구이", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"야채곱창 13,000원 · 데리야끼막창구이 14,000원 (1인당 기준)",
+    hours:{open:"16:00",close:"24:00",closed:[0],brk:null}, source:"다이닝코드",
+    menu:"야채곱창, 데리야끼막창구이, 산더미치즈곱창", location:"종로구 명륜길 53 (정문 인근)",
+    desc:"소주·맥주 4,000원이라 뒤풀이로 많이 가요.", tags:["곱창","막창","저녁"] },
+  { name:"명륜진사갈비 명륜당점", campus:"인문사회과학캠퍼스", area:"교외", dish:"곱창·구이", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"C", priceLabel:"자유이용(성인) 1인 21,900원 · 냉면 5,900원",
+    hours:{open:"11:30",close:"24:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"돼지갈비 무한리필, 소갈비살, 냉면", location:"종로구 성균관로 31 유림회관 1층",
+    desc:"1인 21,900원 무한리필이라 배부르게 먹을 자리로 좋아요. 정문에서 가까워요.", tags:["무한리필","모임"] },
+  { name:"삼삼뚝배기", campus:"인문사회과학캠퍼스", area:"교외", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:null, priceLabel:"가격 정보 미확인", hours:null, source:"구글 지도",
+    coords:[37.5805208,127.0042193],
+    menu:"김치찌개, 된장찌개, 순두부찌개", location:"종로구 대학로 남쪽 (동숭동·이화동 방면)",
+    desc:"찌개에 계란후라이 올린 밥이 함께 나오는 가성비 백반집이에요.", tags:["찌개","가성비"] },
+  { name:"혜화돌쇠아저씨", campus:"인문사회과학캠퍼스", area:"교외", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:null, priceLabel:"가격 정보 미확인", hours:null, source:"구글 지도",
+    coords:[37.5827716,127.0013274],
+    menu:"한식 식사류", location:"종로구 동숭동 (대학로)",
+    desc:"혜화·대학로에서 오래 자리를 지켜온 식당이에요.", tags:["노포","혜화"] },
+  { name:"천하제일탕수육", campus:"인문사회과학캠퍼스", area:"교외", dish:"중화요리", cuisine:"중식", serving:"나눠먹기",
+    priceBand:null, priceLabel:"가격 정보 미확인", hours:null, source:"구글 지도",
+    coords:[37.5883148,126.9954921],
+    menu:"탕수육", location:"종로구 명륜동 (캠퍼스 인근)",
+    desc:"탕수육을 앞세운 중식 술집이에요.", tags:["탕수육","술집"] },
+  { name:"정돈 대학로본점", campus:"인문사회과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"B", priceLabel:"등심돈카츠 16,000원 · 안심돈카츠 17,000원",
+    hours:{open:"11:30",close:"21:30",closed:[],brk:["15:30","17:00"]}, source:"다이닝코드",
+    coords:[37.581773,127.0010837],
+    menu:"등심돈카츠, 안심돈카츠, 새우카츠, 카레", location:"종로구 대학로9길 12 지하 1층",
+    desc:"혜화역 3번 출구에서 가까워요. 브레이크타임(15:30~17:00)이 있어요.", tags:["돈카츠","혜화역"] },
+  { name:"벅벅", campus:"인문사회과학캠퍼스", area:"교외", dish:"버거", cuisine:"양식", serving:"1인",
+    priceBand:"A", priceLabel:"벅벅 7,400원 · 더블벅 9,400원 (세트 12,000원~)",
+    hours:{open:"11:00",close:"21:00",closed:[0],brk:null}, source:"다이닝코드",
+    menu:"벅벅, 더블벅, 해쉬벅, 로또벅", location:"종로구 명륜길 22 1층",
+    desc:"메뉴가 버거 네 종류로 단순해요. 라스트오더는 20:50이에요.", tags:["버거","일요일휴무"] },
+  { name:"버거파크 혜화점", campus:"인문사회과학캠퍼스", area:"교외", dish:"버거", cuisine:"양식", serving:"1인",
+    priceBand:"A", priceLabel:"치킨버거 6,500원 · 더블 비프 치즈버거 8,500원",
+    hours:{open:"11:00",close:"21:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"수제버거, 감자튀김, 어니언링", location:"종로구 대학로11길 5 1층",
+    desc:"라이트 메뉴는 3,900원부터라 가볍게 때우기 좋아요.", tags:["버거","가성비"] },
+  { name:"핏제리아오 본점", campus:"인문사회과학캠퍼스", area:"교외", dish:"파스타·피자", cuisine:"양식", serving:"나눠먹기",
+    priceBand:"C", priceLabel:"피자 20,900원~ · 파스타 23,900원~ (2인 기준 1인당 약 22,000원)",
+    hours:{open:"11:30",close:"22:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"화덕피자, 파스타", location:"종로구 동숭길 86 2~3층",
+    desc:"로마 피자 월드컵 1위 이력이 있는 화덕피자집이에요. 특별한 날 자리로 어울려요.", tags:["화덕피자","기념일"] },
+  { name:"카츠헤세드 혜화 대학로점", campus:"인문사회과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"B", priceLabel:"등심카츠 정식 14,900원 · 치즈카츠 정식 15,900원",
+    hours:{open:"11:00",close:"21:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"안심·등심카츠 정식, 카츠카레, 카츠산도", location:"종로구 대학로 146 1층",
+    desc:"혜화역 4번 출구에서 가까워 공연 전에 들르기 좋아요.", tags:["카츠","혜화역"] },
+  { name:"대학로고래", campus:"인문사회과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"B", priceLabel:"고래 안심카츠 15,000원 · 버터 규카츠 16,500원",
+    hours:{open:"11:30",close:"21:30",closed:[],brk:null}, source:"다이닝코드",
+    menu:"규카츠, 안심카츠, 철판치즈안심카츠, 묵은지돈까스나베", location:"종로구 대학로11길 46 1층",
+    desc:"규카츠를 파는 카츠 전문점이에요. 라스트오더는 20:30이에요.", tags:["규카츠","혜화역"] },
+  { name:"봄까스", campus:"인문사회과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"돈까스 10,000원 · 안심까스 11,000원 · 제육덮밥 10,000원",
+    hours:{open:"11:00",close:"20:00",closed:[0],brk:null}, source:"다이닝코드",
+    menu:"돈까스, 안심까스, 칠리까스, 알밥", location:"종로구 성균관로 85 1층",
+    desc:"캠퍼스 바로 앞 동네 돈까스집이에요. 일요일은 휴무이고 라스트오더는 19:30이에요.", tags:["돈까스","일요일휴무"] },
+  { name:"내가찜한닭 대학로점", campus:"인문사회과학캠퍼스", area:"교외", dish:"찜닭", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"안동찜닭 小 23,000원 (2인 · 1인당 약 11,500원)",
+    hours:{open:"10:00",close:"22:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"안동찜닭, 로제찜닭, 치즈찜닭", location:"종로구 대명길 41",
+    desc:"찜닭을 나눠 먹기 좋은 곳이에요. 아침 10시부터 연중무휴로 열어요.", tags:["찜닭","모임"] },
+  { name:"찌개가한상", campus:"인문사회과학캠퍼스", area:"교외", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"A", priceLabel:"김치·된장·순두부찌개 각 8,000원 · 돈까스 9,000원",
+    hours:null, source:"다이닝코드",
+    menu:"김치찌개, 된장찌개, 순두부찌개, 부대찌개", location:"종로구 동숭길 62 지하 1층",
+    desc:"찌개가 8,000원이고 반찬은 셀프바예요. 혼밥하기 편한 구조인데 영업시간은 확인이 필요해요.", tags:["찌개","혼밥","가성비"] },
+  { name:"명륜건강원", campus:"인문사회과학캠퍼스", area:"교외", dish:"백반·정식", cuisine:"한식", serving:"1인",
+    priceBand:"B", priceLabel:"제육 덮밥 9,800원 · 구운 삼겹 10,800원 · 구운 소고기 11,800원",
+    hours:{open:"11:00",close:"20:30",closed:[0,6],brk:["14:30","16:30"]}, source:"다이닝코드",
+    menu:"덮밥형 가정식 도시락", location:"종로구 혜화로3길 5 아남아파트 상가",
+    desc:"집밥 같은 한 끼를 찾을 때 좋아요. 주말은 휴무이고 브레이크타임이 있어요.", tags:["가정식","건강식","주말휴무"] },
+  { name:"그래도베이커리", campus:"인문사회과학캠퍼스", area:"교외", dish:"빵·커피", cuisine:"카페", serving:"1인",
+    priceBand:"A", priceLabel:"마들렌 3,500원 · 아메리카노 4,500원 · 르뱅쿠키 4,500원",
+    hours:{open:"08:00",close:"20:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"저당·글루텐프리 베이커리, 커피", location:"종로구 성균관로 73 1층",
+    desc:"아침 8시부터 열어 1교시 전에 들르기 좋아요. 저당·글루텐프리 메뉴가 있어요.", tags:["베이커리","아침","저당"] },
+  { name:"노가네", campus:"인문사회과학캠퍼스", area:"교외", dish:"돈까스", cuisine:"일식", serving:"1인",
+    priceBand:"A", priceLabel:"돈까스 4,000원 · 나초치즈돈까스 6,000원",
+    hours:{open:"11:00",close:"19:00",closed:[0,6],brk:null}, source:"다이닝코드",
+    menu:"돈까스, 치즈돈까스, 뚝배기비빔밥", location:"종로구 명륜길 45-19",
+    desc:"돈까스가 4,000원부터 시작하는 인사캠 앞 가성비 식당이에요.", tags:["돈까스","가성비","주말휴무"] },
+  { name:"황소불곱창", campus:"인문사회과학캠퍼스", area:"교외", dish:"곱창·구이", cuisine:"한식", serving:"나눠먹기",
+    priceBand:"B", priceLabel:"야채곱창 14,000원 · 막창구이 15,000원 (1인당 기준)",
+    hours:{open:"14:00",close:"25:00",closed:[],brk:null}, source:"다이닝코드",
+    menu:"야채곱창, 소모듬구이, 막창구이, 순대곱창", location:"종로구 대학로12길 92",
+    desc:"새벽 1시까지 연중무휴로 열어요. 볶음밥 3,000원으로 마무리하기 좋아요.", tags:["곱창","연중무휴","심야"] }
+];
+
+const DAY_KO = ['일','월','화','수','목','금','토'];
+const priceLabelMap = {A:"1만원 이하", B:"1~2만원", C:"2만원 이상"};
+const priceOrder = {A:1, B:2, C:3};
+const campusShort = {"자연과학캠퍼스":"자과캠", "인문사회과학캠퍼스":"인사캠"};
+
+/* ---------- 영업시간 ---------- */
+function toMin(hhmm){
+  const [h,m] = hhmm.split(':').map(Number);
+  return h*60 + m;
+}
+/** null = 시간 미확인, true/false = 영업 여부 */
+function isOpenNow(r, now){
+  if(!r.hours) return null;
+  const h = r.hours;
+  let cur = now.getHours()*60 + now.getMinutes();
+  let day = now.getDay();
+  const open = toMin(h.open);
+  const close = toMin(h.close);   // 24:00 초과 값은 자정 넘김을 뜻함
+  // 자정을 넘겨 영업하는 가게는 새벽 시간대를 전날 영업으로 취급
+  if(close > 1440 && cur < close - 1440){
+    cur += 1440;
+    day = (day + 6) % 7;
+  }
+  if(h.closed.includes(day)) return false;
+  if(cur < open || cur >= close) return false;
+  if(h.brk && cur >= toMin(h.brk[0]) && cur < toMin(h.brk[1])) return false;
+  return true;
+}
+function hoursText(r){
+  if(!r.hours) return "영업시간 미확인";
+  const h = r.hours;
+  const fmt = t => {
+    const m = toMin(t);
+    return m >= 1440 ? String(Math.floor((m-1440)/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0') : t;
+  };
+  let s = fmt(h.open) + '~' + fmt(h.close);
+  if(h.brk) s += ' (브레이크 ' + h.brk[0] + '~' + h.brk[1] + ')';
+  if(h.closed.length) s += ' · ' + h.closed.map(d=>DAY_KO[d]).join('·') + '요일 휴무';
+  return s;
+}
+
+/* ---------- 필터 상태 ---------- */
+const FIELDS = ['campus','area','dish','serving','price','open'];
+const state = {
+  campus:new Set(), area:new Set(), dish:new Set(),
+  serving:new Set(), price:new Set(), open:new Set()
+};
+let sortMode = 'default';
+let currentList = [];      // 현재 필터를 통과한 목록 (랜덤 추천 대상)
+let lastPickName = null;   // 같은 곳이 연속으로 뽑히지 않게
+
+function setupChips(containerId, key){
+  document.getElementById(containerId).querySelectorAll('.chip').forEach(chip => {
+    chip.setAttribute('aria-pressed','false');
+    chip.addEventListener('click', () => {
+      const v = chip.dataset.value;
+      if(state[key].has(v)){ state[key].delete(v); chip.classList.remove('active'); }
+      else { state[key].add(v); chip.classList.add('active'); }
+      chip.setAttribute('aria-pressed', String(state[key].has(v)));
+    });
+  });
+}
+setupChips('campusChips','campus');
+setupChips('areaChips','area');
+setupChips('dishChips','dish');
+setupChips('servingChips','serving');
+setupChips('priceChips','price');
+setupChips('openChips','open');
+
+/* ---------- URL 동기화 ---------- */
+const CHIP_CONTAINER = {campus:'campusChips', area:'areaChips', dish:'dishChips',
+  serving:'servingChips', price:'priceChips', open:'openChips'};
+
+function writeUrl(){
+  const p = new URLSearchParams();
+  FIELDS.forEach(f => { if(state[f].size) p.set(f, [...state[f]].join('|')); });
+  if(sortMode !== 'default') p.set('sort', sortMode);
+  p.set('view','result');
+  history.replaceState(null,'', location.pathname + '?' + p.toString());
+}
+function readUrl(){
+  const p = new URLSearchParams(location.search);
+  FIELDS.forEach(f => {
+    const raw = p.get(f);
+    if(!raw) return;
+    raw.split('|').forEach(v => {
+      const chip = document.querySelector('#'+CHIP_CONTAINER[f]+' .chip[data-value="'+CSS.escape(v)+'"]');
+      if(chip){ state[f].add(v); chip.classList.add('active'); chip.setAttribute('aria-pressed','true'); }
+    });
+  });
+  const s = p.get('sort');
+  if(s){ sortMode = s; document.getElementById('sortSelect').value = s; }
+  return p.get('view') === 'result';
+}
+
+/* ---------- 렌더 ---------- */
+document.getElementById('totalStat').textContent = `두 캠퍼스 ${restaurants.length}곳 수록`;
+
+function sortList(list){
+  const copy = [...list];
+  if(sortMode === 'name') return copy.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  if(sortMode === 'priceAsc' || sortMode === 'priceDesc'){
+    const dir = sortMode === 'priceAsc' ? 1 : -1;
+    return copy.sort((a,b)=>{
+      if(!a.priceBand && !b.priceBand) return 0;
+      if(!a.priceBand) return 1;   // 미확인은 항상 뒤로
+      if(!b.priceBand) return -1;
+      return (priceOrder[a.priceBand]-priceOrder[b.priceBand]) * dir;
+    });
+  }
+  return copy; // default = 데이터 순서(캠퍼스·교내순)
+}
+
+function renderResults(){
+  const now = new Date();
+
+  const base = restaurants.filter(r =>
+    (state.campus.size === 0 || state.campus.has(r.campus)) &&
+    (state.area.size === 0 || state.area.has(r.area)) &&
+    (state.dish.size === 0 || state.dish.has(r.dish)) &&
+    (state.serving.size === 0 || state.serving.has(r.serving))
+  );
+
+  const priced = base.filter(r =>
+    state.price.size === 0 || (r.priceBand !== null && state.price.has(r.priceBand)));
+  const matched = priced.filter(r =>
+    state.open.size === 0 || isOpenNow(r, now) === true);
+
+  const notes = [];
+  if(state.price.size){
+    const n = base.filter(r => r.priceBand === null).length;
+    if(n) notes.push(`가격 미확인 ${n}곳 제외`);
+  }
+  if(state.open.size){
+    const n = priced.filter(r => isOpenNow(r, now) === null).length;
+    if(n) notes.push(`영업시간 미확인 ${n}곳 제외`);
+  }
+
+  const list = sortList(matched);
+  currentList = list;
+
+  document.getElementById('resultCount').textContent = list.length;
+  document.getElementById('pickBtn').disabled = list.length === 0;
+  document.getElementById('pickBtn').style.opacity = list.length === 0 ? '0.5' : '1';
+  document.getElementById('activeFiltersText').textContent = [
+    state.campus.size ? [...state.campus].map(v=>campusShort[v]).join(', ') : '전체 캠퍼스',
+    state.area.size ? [...state.area].join(', ') : '교내·교외 전체',
+    state.dish.size ? [...state.dish].join(', ') : '전체 메뉴',
+    state.serving.size ? [...state.serving].join(', ') : '인원 무관',
+    state.price.size ? [...state.price].map(v=>priceLabelMap[v]).join(', ') : '전체 가격대',
+    state.open.size ? '지금 영업 중' : '영업 여부 무관'
+  ].join(' · ');
+  document.getElementById('excludedText').textContent = notes.join(' · ');
+
+  const cardsEl = document.getElementById('cards');
+  cardsEl.innerHTML = '';
+
+  if(list.length === 0){
+    cardsEl.innerHTML = `
+      <div class="empty-state">
+        <h3>조건에 맞는 식당이 없어요</h3>
+        <p>메뉴나 가격대를 조금 더 넓혀서 다시 찾아보세요.</p>
+      </div>`;
+    return;
+  }
+
+  list.forEach(r => {
+    const openState = isOpenNow(r, now);
+    const card = document.createElement('article');
+    card.className = 'card card-surface';
+    card.innerHTML = `
+      <div class="card-top">
+        <h3>${r.name}</h3>
+        <span class="badge">${r.dish}</span>
+      </div>
+      <div class="tag-row">
+        <span class="mini-tag${r.area === '교내' ? ' inside' : ''}">${campusShort[r.campus]} · ${r.area}</span>
+        <span class="mini-tag">${r.cuisine}</span>
+        ${r.serving === '나눠먹기' ? '<span class="mini-tag share">나눠먹기</span>' : ''}
+        ${openState === true ? '<span class="mini-tag open-now">영업 중</span>' : ''}
+        ${openState === false ? '<span class="mini-tag closed-now">영업 종료</span>' : ''}
+      </div>
+      <p class="menu">${r.menu}</p>
+      <p class="desc">${r.desc}</p>
+      <div class="meta">
+        <div><span class="label">1인당</span><span class="value${r.priceBand ? '' : ' unknown'}">${r.priceLabel}</span></div>
+        <div><span class="label">영업</span><span class="value${r.hours ? '' : ' unknown'}">${hoursText(r)}</span></div>
+        <div><span class="label">위치</span><span class="value">${r.location}</span></div>
+      </div>
+      ${r.area === '교내' ? '<p class="campus-note">그날의 학식 메뉴와 운영 시간은 <b>에브리타임 앱의 학식 정보</b>가 가장 정확해요.</p>' : ''}
+      <p class="foot">
+        <span>${r.tags.map(t=>'#'+t).join(' ')}</span>
+        <span class="source">출처 · ${r.source}</span>
+      </p>
+    `;
+    cardsEl.appendChild(card);
+  });
+}
+
+/* ---------- 랜덤 추천 ---------- */
+function clearPick(){
+  lastPickName = null;
+  const p = document.getElementById('pickPanel');
+  p.classList.remove('visible');
+  p.innerHTML = '';
+}
+function pickRandom(){
+  if(currentList.length === 0) return;
+  // 두 곳 이상이면 직전에 뽑힌 곳은 후보에서 뺀다
+  let pool = currentList;
+  if(currentList.length > 1 && lastPickName){
+    const filtered = currentList.filter(r => r.name !== lastPickName);
+    if(filtered.length) pool = filtered;
+  }
+  const r = pool[Math.floor(Math.random() * pool.length)];
+  lastPickName = r.name;
+
+  const openState = isOpenNow(r, new Date());
+  const panel = document.getElementById('pickPanel');
+  panel.innerHTML = `
+    <div class="pick-inner">
+      <span class="pick-label">오늘은 여기 어때요?</span>
+      <h3>${r.name}</h3>
+      <div class="tag-row">
+        <span class="mini-tag${r.area === '교내' ? ' inside' : ''}">${campusShort[r.campus]} · ${r.area}</span>
+        <span class="mini-tag">${r.dish}</span>
+        ${r.serving === '나눠먹기' ? '<span class="mini-tag share">나눠먹기</span>' : ''}
+        ${openState === true ? '<span class="mini-tag open-now">영업 중</span>' : ''}
+        ${openState === false ? '<span class="mini-tag closed-now">영업 종료</span>' : ''}
+      </div>
+      <p class="pick-menu">${r.menu}</p>
+      <p class="pick-line">${r.priceLabel}</p>
+      <p class="pick-line">${r.location} · ${hoursText(r)}</p>
+      <div class="pick-actions">
+        <button type="button" class="btn btn-outline" id="repickBtn">🎲 다시 뽑기</button>
+      </div>
+    </div>`;
+  panel.classList.add('visible');
+  document.getElementById('repickBtn').addEventListener('click', pickRandom);
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+document.getElementById('pickBtn').addEventListener('click', pickRandom);
+
+/* ---------- 화면 전환 ---------- */
+function showResults(push){
+  clearPick();          // 조건이 바뀌면 이전 추천은 지운다
+  renderResults();
+  document.getElementById('filterPanel').style.display = 'none';
+  document.getElementById('resultSection').style.display = 'block';
+  document.getElementById('frapBtn').classList.add('visible');
+  if(push !== false) writeUrl();
+  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('resultHeading').focus();
+}
+function showFilters(){
+  clearPick();
+  document.getElementById('resultSection').style.display = 'none';
+  document.getElementById('filterPanel').style.display = 'block';
+  document.getElementById('frapBtn').classList.remove('visible');
+  history.replaceState(null,'', location.pathname);
+  window.scrollTo({top:0, behavior:'smooth'});
+  document.getElementById('searchBtn').focus();
+}
+
+document.getElementById('searchBtn').addEventListener('click', () => showResults());
+document.getElementById('backBtn').addEventListener('click', showFilters);
+document.getElementById('frapBtn').addEventListener('click', showFilters);
+document.getElementById('sortSelect').addEventListener('change', e => {
+  sortMode = e.target.value;
+  renderResults();
+  writeUrl();
+});
+document.getElementById('copyBtn').addEventListener('click', async e => {
+  writeUrl();
+  const btn = e.currentTarget;
+  const done = t => { btn.textContent = t; setTimeout(()=>btn.textContent='이 결과 링크 복사', 2000); };
+  try{
+    await navigator.clipboard.writeText(location.href);
+    done('복사했어요');
+  }catch(_){
+    done('복사 실패 — 주소창을 복사해 주세요');
+  }
+});
+
+/* 링크로 들어온 경우 필터 복원 후 바로 결과 표시 */
+if(readUrl()) showResults(false);
+</script>
+
+</body>
+</html>
