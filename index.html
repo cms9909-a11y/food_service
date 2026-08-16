@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>성균관대 맛집 찾기 · 자과캠 &amp; 인사캠</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-R4772MLH47"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-R4772MLH47');
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -724,7 +735,7 @@
         <p>교외 식당은 두 캠퍼스 주변 상권 기준으로 모았습니다. 정확한 위치와 가는 길은 <b>지도 앱에서 상호로 검색</b>해 확인해 주세요.</p>
       </div>
     </div>
-    <p class="legal">© 2026 성균관대 맛집 찾기 · 2026년 8월 기준 참고용 자료<br>어떤 조건을 많이 찾는지 파악하기 위해 검색 조건과 결과를 익명으로 기록합니다. 개인을 식별하는 정보는 저장하지 않습니다.</p>
+    <p class="legal">© 2026 성균관대 맛집 찾기 · 2026년 8월 기준 참고용 자료<br>어떤 조건을 많이 찾는지 파악하기 위해 검색 조건과 결과를 익명으로 기록하며, 방문 통계 수집에 Google Analytics를 사용합니다. 이름·연락처 등 개인을 식별하는 정보는 수집하지 않습니다.</p>
   </div>
 </footer>
 
@@ -1021,9 +1032,36 @@ function currentFilters(){
   };
 }
 
+/* Google Analytics 로도 같은 사건을 보낸다.
+   GA4 이벤트 파라미터는 배열을 받지 못해 문자열로 합친다. */
+function sendToGA(kind, body){
+  if(typeof gtag !== 'function') return;   // 광고 차단 등으로 안 뜰 수 있다
+  const f = body.filters;
+  const join = a => (a && a.length) ? a.join(',') : '(전체)';
+
+  if(kind === 'search'){
+    gtag('event', 'restaurant_search', {
+      campus:       join(f.campus),
+      area:         join(f.area),
+      dish:         join(f.dish),
+      serving:      join(f.serving),
+      price:        join(f.price),
+      open_now:     f.openNow,
+      result_count: body.result_count,
+      is_empty:     body.result_count === 0
+    });
+  }else if(kind === 'pick'){
+    const hit = currentList.find(r => r.id === body.picked_id);
+    gtag('event', 'random_pick', {
+      restaurant:   hit ? hit.name : String(body.picked_id || ''),
+      campus:       hit ? hit.campus : '',
+      dish:         hit ? hit.dish : '',
+      result_count: body.result_count
+    });
+  }
+}
+
 function logEvent(kind, extra){
-  if(!isConfigured()) return;
-  const base = SUPABASE_URL.trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
   const body = Object.assign({
     kind,
     filters:      currentFilters(),
@@ -1031,6 +1069,12 @@ function logEvent(kind, extra){
     result_ids:   currentList.map(r => r.id).filter(v => v != null),
     session_id:   sessionId()
   }, extra || {});
+
+  sendToGA(kind, body);
+
+  // Supabase 기록은 연결 정보가 있을 때만
+  if(!isConfigured()) return;
+  const base = SUPABASE_URL.trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
 
   fetch(base + '/rest/v1/search_logs', {
     method: 'POST',
