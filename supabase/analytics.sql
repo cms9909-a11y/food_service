@@ -8,9 +8,10 @@ create table if not exists public.search_logs (
   id           bigint generated always as identity primary key,
   created_at   timestamptz not null default now(),
 
-  -- 'search' = 필터로 검색한 순간
-  -- 'pick'   = 그 결과 중 랜덤 추천으로 한 곳이 뽑힌 순간
-  kind         text not null check (kind in ('search','pick')),
+  -- 'search'   = 필터로 검색한 순간
+  -- 'pick'     = 그 결과 중 랜덤 추천으로 한 곳이 뽑힌 순간
+  -- 'feedback' = "원하는 식당을 찾으셨나요?" 에 답한 순간
+  kind         text not null check (kind in ('search','pick','feedback')),
 
   -- 그때 걸려 있던 필터 조건
   -- 예: {"campus":["자연과학캠퍼스"],"area":[],"dish":["돈까스"],
@@ -20,6 +21,7 @@ create table if not exists public.search_logs (
   result_count integer not null check (result_count >= 0),
   result_ids   bigint[] not null default '{}',   -- 결과로 나온 식당 id
   picked_id    bigint references public.restaurants(id) on delete set null,
+  found        boolean,   -- kind='feedback' 일 때만: 원하는 식당을 찾았는지
 
   session_id   text
 );
@@ -27,6 +29,7 @@ create table if not exists public.search_logs (
 comment on table  public.search_logs is '필터 검색 및 랜덤 추천 기록. 개인정보 없음';
 comment on column public.search_logs.result_ids is '검색 결과로 화면에 나온 식당 id 목록';
 comment on column public.search_logs.picked_id is 'kind=pick 일 때 랜덤으로 뽑힌 식당';
+comment on column public.search_logs.found is 'kind=feedback 일 때 원하는 식당을 찾았는지 여부';
 
 create index if not exists search_logs_created_idx on public.search_logs (created_at desc);
 create index if not exists search_logs_kind_idx    on public.search_logs (kind);
@@ -96,8 +99,30 @@ where kind = 'search' and result_count = 0
 group by filters
 order by times desc;
 
+-- "원하는 식당을 찾았나" 응답률 — 서비스가 제 역할을 하는지 보는 지표
+create or replace view public.stat_feedback
+  with (security_invoker = on) as
+select
+  count(*)                                          as answers,
+  count(*) filter (where found)                     as found_yes,
+  count(*) filter (where not found)                 as found_no,
+  round(100.0 * count(*) filter (where found) / nullif(count(*), 0), 1) as found_rate_pct
+from public.search_logs
+where kind = 'feedback';
+
+-- 못 찾았다고 답했을 때 걸려 있던 조건 — 무엇이 부족한지 알려준다
+create or replace view public.stat_feedback_missed
+  with (security_invoker = on) as
+select filters, result_count, count(*) as times, max(created_at) as last_seen
+from public.search_logs
+where kind = 'feedback' and found is false
+group by filters, result_count
+order by times desc;
+
 revoke all on public.stat_dish_searches,
               public.stat_restaurant_exposure,
               public.stat_random_picks,
-              public.stat_empty_searches
+              public.stat_empty_searches,
+              public.stat_feedback,
+              public.stat_feedback_missed
   from anon, authenticated;

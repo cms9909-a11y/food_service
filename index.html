@@ -489,6 +489,39 @@
   }
   .card .source{white-space:nowrap;}
 
+  /* 결과 만족도 조사 */
+  .feedback{
+    margin-top:var(--space-6);
+    text-align:center;
+  }
+  .feedback-q{
+    font-size:19px;
+    font-weight:600;
+    line-height:1.5;
+    color:var(--text-black);
+    margin:0 0 var(--space-3);
+  }
+  .feedback-actions{
+    display:flex;
+    gap:var(--space-2);
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .feedback .done{
+    font-size:16px;
+    font-weight:600;
+    line-height:1.5;
+    color:var(--sb-green);
+    margin:0;
+  }
+  .feedback .done small{
+    display:block;
+    margin-top:var(--space-1);
+    font-size:14px;
+    font-weight:400;
+    color:var(--text-black-soft);
+  }
+
   .empty-state{
     grid-column:1/-1;
     text-align:center;
@@ -706,6 +739,7 @@
         </select>
       </div>
       <div class="cards" id="cards"></div>
+      <div class="feedback card-surface" id="feedbackBox" aria-live="polite"></div>
     </div>
   </section>
 
@@ -1058,6 +1092,15 @@ function sendToGA(kind, body){
       dish:         hit ? hit.dish : '',
       result_count: body.result_count
     });
+  }else if(kind === 'feedback'){
+    gtag('event', 'search_feedback', {
+      found:        body.found ? 'yes' : 'no',
+      campus:       join(f.campus),
+      area:         join(f.area),
+      dish:         join(f.dish),
+      price:        join(f.price),
+      result_count: body.result_count
+    });
   }
 }
 
@@ -1087,6 +1130,29 @@ function logEvent(kind, extra){
     body: JSON.stringify(body),
     keepalive: true
   }).catch(() => {});
+}
+
+/* ---------- 결과 만족도 조사 ---------- */
+const FEEDBACK_HTML = `
+  <p class="feedback-q">원하는 식당을 찾으셨나요?</p>
+  <div class="feedback-actions">
+    <button type="button" class="btn btn-primary" data-found="yes">네, 찾았어요</button>
+    <button type="button" class="btn btn-outline" data-found="no">아니요, 못 찾았어요</button>
+  </div>`;
+
+/* 검색할 때마다 질문을 되돌린다 — 조건이 바뀌면 답도 달라지므로 */
+function resetFeedback(){
+  const box = document.getElementById('feedbackBox');
+  box.innerHTML = FEEDBACK_HTML;
+  box.querySelectorAll('[data-found]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const found = btn.dataset.found === 'yes';
+      logEvent('feedback', { found });
+      box.innerHTML = found
+        ? '<p class="done">답변 고마워요! 맛있게 드세요 🍚</p>'
+        : '<p class="done">알려주셔서 고마워요<small>어떤 조건이 부족했는지 기록해 두고 식당을 더 채우겠습니다.</small></p>';
+    }, { once: true });
+  });
 }
 
 /* ---------- 랜덤 추천 ---------- */
@@ -1137,6 +1203,7 @@ document.getElementById('pickBtn').addEventListener('click', pickRandom);
 /* ---------- 화면 전환 ---------- */
 function showResults(push){
   clearPick();          // 조건이 바뀌면 이전 추천은 지운다
+  resetFeedback();      // 만족도 질문도 다시 물어본다
   renderResults();
   logEvent('search');
   document.getElementById('filterPanel').style.display = 'none';
