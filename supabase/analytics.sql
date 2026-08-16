@@ -23,16 +23,31 @@ create table if not exists public.search_logs (
   picked_id    bigint references public.restaurants(id) on delete set null,
   found        boolean,   -- kind='feedback' 일 때만: 원하는 식당을 찾았는지
 
-  session_id   text
+  session_id   text,
+
+  -- found 는 feedback 행에만 있어야 한다.
+  -- 이 조건이 보장되어야 stat_feedback 의 응답 수와 예/아니오 합이 일치한다.
+  constraint search_logs_found_only_on_feedback
+    check ((kind = 'feedback') = (found is not null)),
+
+  -- picked_id 는 pick 행에만 있어야 한다.
+  constraint search_logs_picked_only_on_pick
+    check (kind = 'pick' or picked_id is null)
 );
 
-comment on table  public.search_logs is '필터 검색 및 랜덤 추천 기록. 개인정보 없음';
+comment on table  public.search_logs is '필터 검색·랜덤 추천·만족도 응답 기록. 개인정보 없음';
 comment on column public.search_logs.result_ids is '검색 결과로 화면에 나온 식당 id 목록';
 comment on column public.search_logs.picked_id is 'kind=pick 일 때 랜덤으로 뽑힌 식당';
 comment on column public.search_logs.found is 'kind=feedback 일 때 원하는 식당을 찾았는지 여부';
 
 create index if not exists search_logs_created_idx on public.search_logs (created_at desc);
 create index if not exists search_logs_kind_idx    on public.search_logs (kind);
+
+-- 집계 뷰가 kind로 걸러 읽으므로 해당 행만 담는 부분 인덱스를 둔다
+create index if not exists search_logs_picked_idx on public.search_logs (picked_id)
+  where kind = 'pick';
+create index if not exists search_logs_found_idx  on public.search_logs (found)
+  where kind = 'feedback';
 
 -- ---------------------------------------------------------------
 -- RLS · 넣기만 되고 읽기는 안 되게
@@ -41,6 +56,10 @@ create index if not exists search_logs_kind_idx    on public.search_logs (kind);
 --   - 대시보드는 service_role 로 접속하므로 RLS와 무관하게 조회됩니다.
 -- ---------------------------------------------------------------
 alter table public.search_logs enable row level security;
+
+-- RLS 정책과 별개로 테이블 권한도 있어야 insert 가 통과한다.
+-- Supabase 가 기본 권한을 주긴 하지만, 이 파일만으로 재현되도록 명시한다.
+grant insert on public.search_logs to anon, authenticated;
 
 drop policy if exists "anyone can write a search log" on public.search_logs;
 create policy "anyone can write a search log"
@@ -103,12 +122,14 @@ order by times desc;
 create or replace view public.stat_feedback
   with (security_invoker = on) as
 select
-  count(*)                                          as answers,
-  count(*) filter (where found)                     as found_yes,
-  count(*) filter (where not found)                 as found_no,
+  count(*)                          as answers,
+  count(*) filter (where found)     as found_yes,
+  count(*) filter (where not found) as found_no,
   round(100.0 * count(*) filter (where found) / nullif(count(*), 0), 1) as found_rate_pct
 from public.search_logs
 where kind = 'feedback';
+-- 위 check 제약 덕분에 feedback 행의 found 는 항상 not null 이므로
+-- answers = found_yes + found_no 가 성립한다.
 
 -- 못 찾았다고 답했을 때 걸려 있던 조건 — 무엇이 부족한지 알려준다
 create or replace view public.stat_feedback_missed
