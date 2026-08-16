@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 페이지가 하나뿐인 서비스라 주소도 하나입니다.
+     필터를 걸면 ?campus=... 같은 쿼리가 붙지만, 내용은 같은 페이지이므로
+     (index.html 의 rel=canonical 이 이 주소를 가리킵니다) 넣지 않습니다.
+     주소를 옮기면 여기 <loc> 도 같이 고쳐야 합니다. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://cms9909-a11y.github.io/food_service/</loc>
+    <lastmod>2026-08-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>

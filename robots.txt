@@ -1,0 +1,13 @@
+# 전부 크롤링을 허용합니다. 막을 것이 없습니다.
+User-agent: *
+Allow: /
+
+Sitemap: https://cms9909-a11y.github.io/food_service/sitemap.xml
+
+# 주의 · GitHub Pages 프로젝트 페이지에서는 이 파일이 사실상 읽히지 않습니다.
+#   검색엔진은 robots.txt 를 도메인 최상위에서만 찾습니다. 즉
+#     읽는 곳 : https://cms9909-a11y.github.io/robots.txt        (이 저장소 소유가 아님)
+#     이 파일 : https://cms9909-a11y.github.io/food_service/robots.txt
+#   다만 robots.txt 가 없으면 "전부 허용"이 기본이라 크롤링에는 문제가 없고,
+#   sitemap 은 Search Console 에서 주소로 직접 제출하면 됩니다.
+#   나중에 개인 도메인을 붙이면 이 파일이 그대로 제 역할을 합니다.

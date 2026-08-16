@@ -5,6 +5,43 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>성균관대 맛집 찾기 · 자과캠 &amp; 인사캠</title>
 
+<!-- ============================================================
+     검색 노출 (SEO)
+     주소를 옮기면 아래 CANONICAL 주석이 달린 4곳과
+     robots.txt · sitemap.xml 의 주소도 같이 고쳐야 합니다.
+     ============================================================ -->
+<meta name="description" content="성균관대 맛집을 캠퍼스·메뉴·가격·영업시간으로 걸러 찾습니다. 수원 자과캠(율전동)과 서울 인사캠(명륜동)의 학생식당부터 주변 맛집까지, 고민되면 랜덤 추천도 받아보세요.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#006241">
+<link rel="canonical" href="https://cms9909-a11y.github.io/food_service/"><!-- CANONICAL -->
+
+<!-- 카카오톡·페이스북 등으로 공유했을 때 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="성균관대 맛집 찾기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="성균관대 맛집 찾기 · 자과캠 &amp; 인사캠">
+<meta property="og:description" content="캠퍼스·메뉴·가격·영업시간으로 걸러 오늘 갈 곳을 찾아보세요. 고민되면 랜덤 추천도 받을 수 있어요.">
+<meta property="og:url" content="https://cms9909-a11y.github.io/food_service/"><!-- CANONICAL -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="성균관대 맛집 찾기 · 자과캠 &amp; 인사캠">
+<meta name="twitter:description" content="캠퍼스·메뉴·가격·영업시간으로 걸러 오늘 갈 곳을 찾아보세요.">
+
+<!-- 주소창·검색결과에 뜨는 아이콘. 외부 파일 없이 이모지를 SVG 로 감쌌습니다. -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍚</text></svg>">
+
+<!-- 구글이 '무엇을 하는 사이트인가' 를 구조화해 읽는 부분 -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "성균관대 맛집 찾기",
+  "alternateName": ["성대 맛집 찾기", "성균관대 학식 맛집"],
+  "url": "https://cms9909-a11y.github.io/food_service/",
+  "inLanguage": "ko-KR",
+  "description": "성균관대 자연과학캠퍼스와 인문사회과학캠퍼스 주변 맛집과 학생식당을 캠퍼스·메뉴·가격·영업시간으로 걸러 찾는 서비스."
+}
+</script>
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-R4772MLH47"></script>
 <script>
@@ -634,8 +671,8 @@
 <main>
 
   <header class="wrap hero">
-    <h1>성대생을 위한<br>오늘의 한 끼</h1>
-    <p>수원 자연과학캠퍼스와 서울 인문사회과학캠퍼스, 두 캠퍼스의 학생식당부터 주변 맛집까지 한 번에 찾아보세요.</p>
+    <h1>성균관대 맛집,<br>오늘의 한 끼</h1>
+    <p>성대생을 위한 맛집 찾기. 수원 자연과학캠퍼스와 서울 인문사회과학캠퍼스, 두 캠퍼스의 학생식당부터 주변 맛집까지 한 번에 찾아보세요.</p>
     <span class="stat" id="totalStat"></span>
   </header>
 
@@ -1067,40 +1104,63 @@ function currentFilters(){
 }
 
 /* Google Analytics 로도 같은 사건을 보낸다.
-   GA4 이벤트 파라미터는 배열을 받지 못해 문자열로 합친다. */
+   GA4 이벤트 파라미터는 배열을 받지 못해 문자열로 합친다.
+
+   GA 리포트에서 읽기 쉽도록 두 가지를 지킨다.
+   1) 만족도 답변은 파라미터가 아니라 '이벤트 이름'으로 가른다.
+      맞춤 정의를 등록하지 않아도 기본 리포트(이벤트 이름별 이벤트 수)에
+      feedback_found / feedback_not_found 가 바로 줄로 나온다.
+   2) 숫자 파라미터는 라벨을 같이 보낸다. 값이 '1', '7' 처럼 맨숫자로만
+      찍히면 무슨 뜻인지 알 수 없기 때문이다. */
+const RESULT_BUCKETS = [
+  [0,  '결과 0곳 (못 찾음)'],
+  [3,  '결과 1~3곳'],
+  [9,  '결과 4~9곳'],
+  [Infinity, '결과 10곳 이상']
+];
+function resultLabel(n){
+  const hit = RESULT_BUCKETS.find(([max]) => n <= max);
+  return hit ? hit[1] : '결과 10곳 이상';
+}
+
 function sendToGA(kind, body){
   if(typeof gtag !== 'function') return;   // 광고 차단 등으로 안 뜰 수 있다
   const f = body.filters;
   const join = a => (a && a.length) ? a.join(',') : '(전체)';
+  const filterParams = {
+    campus:  join(f.campus),
+    area:    join(f.area),
+    dish:    join(f.dish),
+    serving: join(f.serving),
+    price:   join(f.price)
+  };
 
   if(kind === 'search'){
-    gtag('event', 'restaurant_search', {
-      campus:       join(f.campus),
-      area:         join(f.area),
-      dish:         join(f.dish),
-      serving:      join(f.serving),
-      price:        join(f.price),
-      open_now:     f.openNow,
-      result_count: body.result_count,
-      is_empty:     body.result_count === 0
-    });
+    gtag('event', 'restaurant_search', Object.assign({}, filterParams, {
+      open_now:      f.openNow ? '영업 중만' : '전체',
+      result_count:  body.result_count,
+      result_bucket: resultLabel(body.result_count)
+    }));
+    // 조건에 맞는 식당이 하나도 없던 순간은 따로 이름을 붙여 둔다
+    if(body.result_count === 0){
+      gtag('event', 'search_no_result', filterParams);
+    }
   }else if(kind === 'pick'){
     const hit = currentList.find(r => r.id === body.picked_id);
     gtag('event', 'random_pick', {
-      restaurant:   hit ? hit.name : String(body.picked_id || ''),
-      campus:       hit ? hit.campus : '',
-      dish:         hit ? hit.dish : '',
-      result_count: body.result_count
+      restaurant:    hit ? hit.name : String(body.picked_id || ''),
+      campus:        hit ? hit.campus : '',
+      dish:          hit ? hit.dish : '',
+      result_count:  body.result_count,
+      result_bucket: resultLabel(body.result_count)
     });
   }else if(kind === 'feedback'){
-    gtag('event', 'search_feedback', {
-      found:        body.found ? 'yes' : 'no',
-      campus:       join(f.campus),
-      area:         join(f.area),
-      dish:         join(f.dish),
-      price:        join(f.price),
-      result_count: body.result_count
-    });
+    gtag('event', body.found ? 'feedback_found' : 'feedback_not_found',
+      Object.assign({}, filterParams, {
+        found_label:   body.found ? '찾았어요' : '못 찾았어요',
+        result_count:  body.result_count,
+        result_bucket: resultLabel(body.result_count)
+      }));
   }
 }
 
