@@ -11,7 +11,9 @@ create table if not exists public.search_logs (
   -- 'search'   = 필터로 검색한 순간
   -- 'pick'     = 그 결과 중 랜덤 추천으로 한 곳이 뽑힌 순간
   -- 'feedback' = "원하는 식당을 찾으셨나요?" 에 답한 순간
-  kind         text not null check (kind in ('search','pick','feedback')),
+  kind         text not null
+    constraint search_logs_kind_allowed
+    check (kind in ('search','pick','feedback')),
 
   -- 그때 걸려 있던 필터 조건
   -- 예: {"campus":["자연과학캠퍼스"],"area":[],"dish":["돈까스"],
@@ -34,6 +36,38 @@ create table if not exists public.search_logs (
   constraint search_logs_picked_only_on_pick
     check (kind = 'pick' or picked_id is null)
 );
+
+-- ---------------------------------------------------------------
+-- 이미 만들어 둔 테이블 따라잡기
+--   위의 `create table if not exists` 는 테이블이 있으면 통째로 건너뜁니다.
+--   그래서 만족도 조사를 붙이기 전에 이 파일을 실행한 프로젝트에는
+--   found 열도, 'feedback' 을 허용하는 제약도 없습니다.
+--   아래 구문은 새 프로젝트에서는 사실상 아무 일도 하지 않고,
+--   예전 테이블에서만 빠진 것을 채웁니다. 쌓인 데이터는 지우지 않습니다.
+-- ---------------------------------------------------------------
+alter table public.search_logs
+  add column if not exists found boolean;
+
+-- 예전 제약은 kind 를 ('search','pick') 까지만 받아서
+-- 만족도 응답 insert 가 조용히 거절되고 있었습니다.
+-- search_logs_kind_check 는 이름을 안 붙였던 시절 Postgres 가 지어준 이름입니다.
+alter table public.search_logs drop constraint if exists search_logs_kind_check;
+alter table public.search_logs drop constraint if exists search_logs_kind_allowed;
+alter table public.search_logs
+  add constraint search_logs_kind_allowed
+  check (kind in ('search','pick','feedback'));
+
+-- 아래 둘은 create table 안에도 있지만 예전 테이블에는 없습니다.
+-- 같은 이름이 있으면 add 가 실패하므로 지우고 다시 만듭니다.
+alter table public.search_logs drop constraint if exists search_logs_found_only_on_feedback;
+alter table public.search_logs
+  add constraint search_logs_found_only_on_feedback
+  check ((kind = 'feedback') = (found is not null));
+
+alter table public.search_logs drop constraint if exists search_logs_picked_only_on_pick;
+alter table public.search_logs
+  add constraint search_logs_picked_only_on_pick
+  check (kind = 'pick' or picked_id is null);
 
 comment on table  public.search_logs is '필터 검색·랜덤 추천·만족도 응답 기록. 개인정보 없음';
 comment on column public.search_logs.result_ids is '검색 결과로 화면에 나온 식당 id 목록';
