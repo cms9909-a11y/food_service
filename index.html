@@ -724,7 +724,7 @@
         <p>교외 식당은 두 캠퍼스 주변 상권 기준으로 모았습니다. 정확한 위치와 가는 길은 <b>지도 앱에서 상호로 검색</b>해 확인해 주세요.</p>
       </div>
     </div>
-    <p class="legal">© 2026 성균관대 맛집 찾기 · 2026년 8월 기준 참고용 자료</p>
+    <p class="legal">© 2026 성균관대 맛집 찾기 · 2026년 8월 기준 참고용 자료<br>어떤 조건을 많이 찾는지 파악하기 위해 검색 조건과 결과를 익명으로 기록합니다. 개인을 식별하는 정보는 저장하지 않습니다.</p>
   </div>
 </footer>
 
@@ -756,6 +756,7 @@ const isConfigured = () =>
 /* DB 행(snake_case) → 화면에서 쓰는 모양(camelCase) */
 function toRestaurant(row){
   return {
+    id:         row.id,
     name:       row.name,
     campus:     row.campus,
     area:       row.area,
@@ -988,6 +989,62 @@ function renderResults(){
   });
 }
 
+/* ------------------------------------------------------------------
+   검색 로그
+   필터로 찾은 결과와 랜덤 추천 결과를 Supabase에 쌓는다.
+   개인정보는 남기지 않는다. session_id 는 탭 세션마다 새로 만들어지는
+   임의 문자열이고 탭을 닫으면 사라진다.
+   기록 실패는 조용히 무시한다 — 로그 때문에 검색이 막히면 안 된다.
+------------------------------------------------------------------- */
+const SESSION_KEY = 'skku-food-session';
+
+function sessionId(){
+  try{
+    let s = sessionStorage.getItem(SESSION_KEY);
+    if(!s){
+      s = (crypto.randomUUID && crypto.randomUUID()) ||
+          (Date.now().toString(36) + Math.random().toString(36).slice(2));
+      sessionStorage.setItem(SESSION_KEY, s);
+    }
+    return s;
+  }catch(_){ return null; }   // 사생활 보호 모드 등에서 접근이 막힐 수 있다
+}
+
+function currentFilters(){
+  return {
+    campus:  [...state.campus],
+    area:    [...state.area],
+    dish:    [...state.dish],
+    serving: [...state.serving],
+    price:   [...state.price],
+    openNow: state.open.size > 0
+  };
+}
+
+function logEvent(kind, extra){
+  if(!isConfigured()) return;
+  const base = SUPABASE_URL.trim().replace(/\/+$/, '').replace(/\/rest\/v1$/, '');
+  const body = Object.assign({
+    kind,
+    filters:      currentFilters(),
+    result_count: currentList.length,
+    result_ids:   currentList.map(r => r.id).filter(v => v != null),
+    session_id:   sessionId()
+  }, extra || {});
+
+  fetch(base + '/rest/v1/search_logs', {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal'
+    },
+    body: JSON.stringify(body),
+    keepalive: true
+  }).catch(() => {});
+}
+
 /* ---------- 랜덤 추천 ---------- */
 function clearPick(){
   lastPickName = null;
@@ -1005,6 +1062,7 @@ function pickRandom(){
   }
   const r = pool[Math.floor(Math.random() * pool.length)];
   lastPickName = r.name;
+  logEvent('pick', { picked_id: r.id });
 
   const openState = isOpenNow(r, new Date());
   const panel = document.getElementById('pickPanel');
@@ -1036,6 +1094,7 @@ document.getElementById('pickBtn').addEventListener('click', pickRandom);
 function showResults(push){
   clearPick();          // 조건이 바뀌면 이전 추천은 지운다
   renderResults();
+  logEvent('search');
   document.getElementById('filterPanel').style.display = 'none';
   document.getElementById('resultSection').style.display = 'block';
   document.getElementById('frapBtn').classList.add('visible');
